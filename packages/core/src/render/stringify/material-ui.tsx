@@ -1,13 +1,10 @@
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import cheerio from 'cheerio';
-import {
-  convertAttrToString,
-  getHeadHtml,
-} from './helpers';
+import React from "react";
+import ReactDOMServer from "react-dom/server";
+import cheerio from "cheerio";
+import { convertAttrToString, getHeadHtml } from "./helpers";
 
-const Head = require('./head');
-const { ServerStyleSheets } = require('@material-ui/core/styles');
+const Head = require("./head");
+const { ServerStyleSheets } = require("@material-ui/styles");
 
 export default (app: React.ReactElement, script: string) => {
   const sheets = new ServerStyleSheets();
@@ -15,17 +12,20 @@ export default (app: React.ReactElement, script: string) => {
   const css = sheets.toString();
 
   const $ = cheerio.load(html);
-  const scriptTags = $.html($('body script'));
-  const bodyWithoutScriptTags = ($('body').html() || '').replace(scriptTags, '');
+  const scriptTags = $.html($("body script"));
+  const bodyWithoutScriptTags = ($("body").html() || "").replace(
+    scriptTags,
+    ""
+  );
 
   return `
 <!DOCTYPE html>
-<html${convertAttrToString($('html').attr())}>
+<html${convertAttrToString($("html").attr())}>
   <head>
     ${getHeadHtml(Head.rewind())}
     <style id="jss-server-side">${css}</style>
   </head>
-  <body${convertAttrToString($('body').attr())}>
+  <body${convertAttrToString($("body").attr())}>
     <div id="react-ssr-root">${bodyWithoutScriptTags}</div>
     <script src="${script}"></script>
     ${scriptTags}
